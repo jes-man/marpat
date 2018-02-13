@@ -1,6 +1,6 @@
-# Camo
+# Marpat
 
-**Camo needs your help!** Interested in contributing? [Let me know](mailto:s.w.robinson+camo@gmail.com)!
+Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [camo](https://github.com/scottwrobinson/camo).
 
 ## Jump To
 * <a href="#why-do-we-need-another-odm">Why do we need another ODM?</a>
@@ -20,11 +20,6 @@
 * <a href="#contributing">Contributing</a>
 * <a href="#contact">Contact</a>
 * <a href="#copyright-license">Copyright & License</a>
-
-## Why do we need another ODM?
-Short answer, we probably don't. Camo was created for two reasons: to bring traditional-style classes to [MongoDB](https://www.mongodb.com/) JavaScript, and to support [NeDB](https://github.com/louischatriot/nedb) as a backend (which is much like the SQLite-alternative to Mongo).
-
-Throughout development this eventually turned in to a library full of [ES6](https://github.com/lukehoban/es6features) features. Coming from a Java background, its easier for me to design and write code in terms of classes, and I suspect this is true for many JavaScript beginners. While ES6 classes don't bring any new functionality to the language, they certainly do make it much easier to jump in to OOP with JavaScript, which is reason enough to warrent a new library, IMO.
 
 ## Advantages
 So, why use Camo?
