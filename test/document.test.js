@@ -1466,7 +1466,7 @@ describe('Document', function() {
             let preValidateCalled = false;
             let preSaveCalled = false;
             let preDeleteCalled = false;
-            let preInit = false
+            let preInitCalled = false
             let postValidateCalled = false;
             let postSaveCalled = false;
             let postDeleteCalled = false;

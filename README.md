@@ -24,10 +24,8 @@ So, why use Marpat?
 
 - **ES6**: ES6 features are quickly being added to Node, especially now that it has merged with io.js. With all of these new features being released, Marpat is getting a head start in writing tested and proven ES6 code. This also means that native Promises are built-in to Marpat, so no more `promisify`-ing your ODM or waiting for Promise support to be added natively.
 - **Easy to use**: While JavaScript is a great language overall, it isn't always the easiest for beginners to pick up. Marpat aims to ease that transition by providing familiar-looking classes and a simple interface. Also, there is no need to install a full MongoDB instance to get started thanks to the support of NeDB.
-- **Multiple backends**: Marpat was designed and built with multiple Mongo-like backends in mind, like NeDB, LokiJS\*, and TaffyDB\*. With NeDB support, for example, you don't need to install a full MongoDB instance for development or for smaller projects. This also allows you to use Marpat in the browser, since databases like NeDB supports in-memory storage.
+- **Multiple backends**: Marpat was designed and built with multiple Mongo-like backends in mind, like NeDB, MongoDB, and Firebase. With NeDB support, for example, you don't need to install a full MongoDB instance for development or for smaller projects. This also allows you to use Marpat in the browser, since databases like NeDB supports in-memory storage.
 - **Lightweight**: Marpat is just a very thin wrapper around the backend databases, which mean you won't be sacrificing performance.
-
-\* Support coming soon.
 
 ## Install and Run
 To use Marpat, you must first have installed **Node >2.0.x**, then run the following commands:
