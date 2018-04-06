@@ -1,6 +1,6 @@
 # Marpat
 
-Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [camo](https://github.com/scottwrobinson/camo).
+Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Marpat](https://github.com/scottwrobinson/Marpat).
 
 ## Jump To
 * <a href="#why-do-we-need-another-odm">Why do we need another ODM?</a>
@@ -22,19 +22,19 @@ Marpat is lightweight object modeling tool that uses ES6 classes to model data. 
 * <a href="#copyright-license">Copyright & License</a>
 
 ## Advantages
-So, why use Camo?
+So, why use Marpat?
 
-- **ES6**: ES6 features are quickly being added to Node, especially now that it has merged with io.js. With all of these new features being released, Camo is getting a head start in writing tested and proven ES6 code. This also means that native Promises are built-in to Camo, so no more `promisify`-ing your ODM or waiting for Promise support to be added natively.
-- **Easy to use**: While JavaScript is a great language overall, it isn't always the easiest for beginners to pick up. Camo aims to ease that transition by providing familiar-looking classes and a simple interface. Also, there is no need to install a full MongoDB instance to get started thanks to the support of NeDB.
-- **Multiple backends**: Camo was designed and built with multiple Mongo-like backends in mind, like NeDB, LokiJS\*, and TaffyDB\*. With NeDB support, for example, you don't need to install a full MongoDB instance for development or for smaller projects. This also allows you to use Camo in the browser, since databases like NeDB supports in-memory storage.
-- **Lightweight**: Camo is just a very thin wrapper around the backend databases, which mean you won't be sacrificing performance.
+- **ES6**: ES6 features are quickly being added to Node, especially now that it has merged with io.js. With all of these new features being released, Marpat is getting a head start in writing tested and proven ES6 code. This also means that native Promises are built-in to Marpat, so no more `promisify`-ing your ODM or waiting for Promise support to be added natively.
+- **Easy to use**: While JavaScript is a great language overall, it isn't always the easiest for beginners to pick up. Marpat aims to ease that transition by providing familiar-looking classes and a simple interface. Also, there is no need to install a full MongoDB instance to get started thanks to the support of NeDB.
+- **Multiple backends**: Marpat was designed and built with multiple Mongo-like backends in mind, like NeDB, LokiJS\*, and TaffyDB\*. With NeDB support, for example, you don't need to install a full MongoDB instance for development or for smaller projects. This also allows you to use Marpat in the browser, since databases like NeDB supports in-memory storage.
+- **Lightweight**: Marpat is just a very thin wrapper around the backend databases, which mean you won't be sacrificing performance.
 
 \* Support coming soon.
 
 ## Install and Run
-To use Camo, you must first have installed **Node >2.0.x**, then run the following commands:
+To use Marpat, you must first have installed **Node >2.0.x**, then run the following commands:
 
-    npm install camo --save
+    npm install marpat --save
 
 And at least ONE of the following:
 
@@ -45,27 +45,25 @@ And at least ONE of the following:
     npm install mongodb --save
 
 ## Quick Start
-Camo was built with ease-of-use and ES6 in mind, so you might notice it has more of an OOP feel to it than many existing libraries and ODMs. Don't worry, focusing on object-oriented design doesn't mean we forgot about functional techniques or asynchronous programming. Promises are built-in to the API. Just about every call you make interacting with the database (find, save, delete, etc) will return a Promise. No more callback hell :)
-
-For a short tutorial on using Camo, check out [this](http://stackabuse.com/getting-started-with-camo/) article.
+Marpat was built with ease-of-use and ES6 in mind, so you might notice it has more of an OOP feel to it than many existing libraries and ODMs. Don't worry, focusing on object-oriented design doesn't mean we forgot about functional techniques or asynchronous programming. Promises are built-in to the API. Just about every call you make interacting with the database (find, save, delete, etc) will return a Promise.
 
 ### Connect to the Database
-Before using any document methods, you must first connect to your underlying database. All supported databases have their own unique URI string used for connecting. The URI string usually describes the network location or file location of the database. However, some databases support more than just network or file locations. NeDB, for example, supports storing data in-memory, which can be specified to Camo via `nedb://memory`. See below for details:
+Before using any document methods, you must first connect to your underlying database. All supported databases have their own unique URI string used for connecting. The URI string usually describes the network location or file location of the database. However, some databases support more than just network or file locations. NeDB, for example, supports storing data in-memory, which can be specified to Marpat via `nedb://memory`. See below for details:
 
 - MongoDB: 
   - Format: mongodb://[username:password@]host[:port][/db-name]
-  - Example: `var uri = 'mongodb://scott:abc123@localhost:27017/animals';`
+  - Example: `const uri = 'mongodb://scott:abc123@localhost:27017/animals';`
 - NeDB:
   - Format: nedb://[directory-path] OR nedb://memory
-  - Example: `var uri = 'nedb:///Users/scott/data/animals';`
+  - Example: `const uri = 'nedb://data';`
 
 So to connect to an NeDB database, use the following:
 
 ```javascript
-var connect = require('camo').connect;
+const { connect } = require('marpat')
 
-var database;
-var uri = 'nedb:///Users/scott/data/animals';
+const database;
+const uri = 'nedb://data';
 connect(uri).then(function(db) {
     database = db;
 });
@@ -75,7 +73,7 @@ connect(uri).then(function(db) {
 All models must inherit from the `Document` class, which handles much of the interface to your backend NoSQL database.
 
 ```javascript
-var Document = require('camo').Document;
+const { Document } = require('Marpat');
 
 class Company extends Document {
     constructor() {
@@ -100,11 +98,8 @@ class Company extends Document {
 }
 ```
 
-Notice how the schema is declared right in the constructor as member variables. All _public_ member variables (variables that don't start with an underscore [_]) are added to the schema.
-
-The name of the collection can be set by overriding the `static collectionName()` method, which should return the desired collection name as a string. If one isn't given, then Camo uses the name of the class and naively appends an 's' to the end to make it plural.
-
-Schemas can also be defined using the `this.schema()` method. For example, in the `constructor()` method you could use:
+Notice how the schema is declared right in the constructor as member variables. All _public_ member variables (variables that don't start with an underscore [\_]) are added to the schema.
+The name of the collection can be set by overriding the `static collectionName()` method, which should return the desired collection name as a string. If one isn't given, then Marpat uses the name of the class and naively appends an 's' to the end to make it plural. Schemas can also be defined using the `this.schema()` method. For example, in the `constructor()` method you could use:
 
 ```javascript
 this.schema({
@@ -134,7 +129,7 @@ Currently supported variable types are:
 - `EmbeddedDocument`
 - Document Reference
 
-Arrays can either be declared as either un-typed (using `Array` or `[]`), or typed (using the `[TYPE]` syntax, like `[String]`). Typed arrays are enforced by Camo on `.save()` and an `Error` will be thrown if a value of the wrong type is saved in the array. Arrays of references are also supported.
+Arrays can either be declared as either un-typed (using `Array` or `[]`), or typed (using the `[TYPE]` syntax, like `[String]`). Typed arrays are enforced by Marpat on `.save()` and an `Error` will be thrown if a value of the wrong type is saved in the array. Arrays of references are also supported.
 
 To declare a member variable in the schema, either directly assign it one of the types listed above, or assign it an object with options, like this:
 
@@ -192,8 +187,8 @@ class Person extends Document {
 Embedded documents can also be used within `Document`s. You must declare them separately from the main `Document` that it is being used in. `EmbeddedDocument`s are good for when you need an `Object`, but also need enforced schemas, validation, defaults, hooks, and member functions. All of the options (type, default, min, etc) mentioned above work on `EmbeddedDocument`s as well.
 
 ```javascript
-var Document = require('camo').Document;
-var EmbeddedDocument = require('camo').EmbeddedDocument;
+var { Document } = require('Marpat');
+var { EmbeddedDocument } = require('Marpat');
 
 class Money extends EmbeddedDocument {
     constructor() {
@@ -218,7 +213,7 @@ class Wallet extends Document {
     }
 }
 
-var wallet = Wallet.create();
+const wallet = Wallet.create();
 wallet.contents.push(Money.create());
 wallet.contents[0].value = 5;
 wallet.contents.push(Money.create());
@@ -233,7 +228,7 @@ wallet.save().then(function() {
 To create a new instance of our document, we need to use the `.create()` method, which handles all of the construction for us.
 
 ```javascript
-var lassie = Dog.create({
+const lassie = Dog.create({
     name: 'Lassie',
     breed: 'Collie'
 });
@@ -313,7 +308,7 @@ Dog.count({ breed: 'Collie' }).then(function(count) {
 ```
 
 ### Hooks
-Camo provides hooks for you to execute code before and after critical parts of your database interactions. For each hook you use, you may return a value (which, as of now, will be discarded) or a Promise for executing asynchronous code. Using Promises throughout Camo allows us to not have to provide separate async and sync hooks, thus making your code simpler and easier to understand.
+Marpat provides hooks for you to execute code before and after critical parts of your database interactions. For each hook you use, you may return a value (which, as of now, will be discarded) or a Promise for executing asynchronous code. Using Promises throughout Marpat allows us to not have to provide separate async and sync hooks, thus making your code simpler and easier to understand.
 
 Hooks can be used not only on `Document` objects, but `EmbeddedDocument` objects as well. The embedded object's hooks will be called when it's parent `Document` is saved/validated/deleted (depending on the hook you provide).
 
@@ -360,27 +355,27 @@ The code above shows a pre-delete hook that deletes all the employees of the com
 **Note**: The `.preDelete()` and `.postDelete()` hooks are _only_ called when calling `.delete()` on a Document instance. Calling `.deleteOne()` or `.deleteMany()` will **not** trigger the hook methods.
 
 ### Misc.
-- `camo.getClient()`: Retrieves the Camo database client
-- `camo.getClient().driver()`: Retrieves the underlying database driver (`MongoClient` or a map of NeDB collections)
+- `Marpat.getClient()`: Retrieves the Marpat database client
+- `Marpat.getClient().driver()`: Retrieves the underlying database driver (`MongoClient` or a map of NeDB collections)
 - `Document.toJSON()`: Serializes the given document to just the data, which includes nested and referenced data
 
 ## Transpiler Support
-While many transpilers won't have any problem with Camo, some need extra resources/plugins to work correctly:
+While many transpilers won't have any problem with Marpat, some need extra resources/plugins to work correctly:
 
 - Babel
-  - [babel-preset-camo](https://github.com/scottwrobinson/babel-preset-camo): Babel preset for all es2015 plugins supported by Camo
+  - [babel-preset-Marpat](https://github.com/scottwrobinson/babel-preset-Marpat): Babel preset for all es2015 plugins supported by Marpat
 - TypeScript
-  - [DefinitelyTyped/camo](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/camo): Camo declaration file (h/t [lucasmciruzzi](https://github.com/lucasmciruzzi))
-  - [IndefinitivelyTyped/camo](https://github.com/IndefinitivelyTyped/camo): Typings support for Camo (h/t [WorldMaker](https://github.com/WorldMaker))
+  - [DefinitelyTyped/Marpat](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/Marpat): Marpat declaration file (h/t [lucasmciruzzi](https://github.com/lucasmciruzzi))
+  - [IndefinitivelyTyped/Marpat](https://github.com/IndefinitivelyTyped/Marpat): Typings support for Marpat (h/t [WorldMaker](https://github.com/WorldMaker))
 
 ## Contributing
-Feel free to open new issues or submit pull requests for Camo. If you'd like to contact me before doing so, feel free to get in touch (see Contact section below).
+Feel free to open new issues or submit pull requests for Marpat. If you'd like to contact me before doing so, feel free to get in touch (see Contact section below).
 
 Before opening an issue or submitting a PR, I ask that you follow these guidelines:
 
 **Issues**
 - Please state whether your issue is a question, feature request, or bug report.
-- Always try the latest version of Camo before opening an issue.
+- Always try the latest version of Marpat before opening an issue.
 - If the issue is a bug, be sure to clearly state your problem, what you expected to happen, and what all you have tried to resolve it.
 - Always try to post simplified code that shows the problem. Use Gists for longer examples.
 
@@ -391,15 +386,22 @@ Before opening an issue or submitting a PR, I ask that you follow these guidelin
 - Include updates to the README when needed.
 - Do not update the package version or CHANGELOG. I'll handle that for each release.
 
-## Contact
-You can contact me with questions, issues, or ideas at either of the following:
+## Marpat Copyright & License
+Copyright (c) 2018 Lui de la Parra
 
-- Email: [s.w.robinson+camo@gmail.com](mailto:s.w.robinson+camo@gmail.com)
-- Twitter: [@ScottWRobinson](https://twitter.com/ScottWRobinson)
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-For short questions and faster responses, try Twitter.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-## Copyright & License
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## Orignal Camo Copyright & License
 Copyright (c) 2016 Scott Robinson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
