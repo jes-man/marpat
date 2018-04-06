@@ -1,6 +1,6 @@
 # Marpat
 
-Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Camo](https://github.com/scottwrobinson/camo). When integrating with FileMaker servers I found the need to limit
+Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Camo](https://github.com/scottwrobinson/camo). When integrating with FileMaker servers I found a need for a local datastore alongside filemaker.
 
 ## Jump To
 * <a href="#advantages">Advantages</a>
@@ -69,7 +69,7 @@ connect(uri).then(function(db) {
 All models must inherit from the `Document` class, which handles much of the interface to your backend NoSQL database.
 
 ```javascript
-const { Document } = require('Marpat');
+const { Document } = require('marpat');
 
 class Company extends Document {
     constructor() {
@@ -352,18 +352,18 @@ The code above shows a pre-delete hook that deletes all the employees of the com
 **Note**: The `.preDelete()` and `.postDelete()` hooks are _only_ called when calling `.delete()` on a Document instance. Calling `.deleteOne()` or `.deleteMany()` will **not** trigger the hook methods.
 
 ### Misc.
-- `Marpat.getClient()`: Retrieves the Marpat database client
+- `Marpat.getClient()`: Retrieves the marpat database client
 - `Marpat.getClient().driver()`: Retrieves the underlying database driver (`MongoClient` or a map of NeDB collections)
 - `Document.toJSON()`: Serializes the given document to just the data, which includes nested and referenced data
 
 ## Transpiler Support
-While many transpilers won't have any problem with Marpat, some need extra resources/plugins to work correctly:
+This is a work in progress. You can use the camo transpilers for now. While many transpilers won't have any problem with Marpat, some need extra resources/plugins to work correctly:
 
 - Babel
-  - [babel-preset-Marpat](https://github.com/scottwrobinson/babel-preset-Marpat): Babel preset for all es2015 plugins supported by Marpat
+  - [babel-preset-camo](https://github.com/luidog/babel-preset-camo): Babel preset for all es2015 plugins supported by Camo
 - TypeScript
-  - [DefinitelyTyped/Marpat](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/Marpat): Marpat declaration file (h/t [lucasmciruzzi](https://github.com/lucasmciruzzi))
-  - [IndefinitivelyTyped/Marpat](https://github.com/IndefinitivelyTyped/Marpat): Typings support for Marpat (h/t [WorldMaker](https://github.com/WorldMaker))
+  - [DefinitelyTyped/camo](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/camo): camo declaration file (h/t [lucasmciruzzi](https://github.com/lucasmciruzzi))
+  - [IndefinitivelyTyped/camo](https://github.com/IndefinitivelyTyped/camo): Typings support for camo (h/t [WorldMaker](https://github.com/WorldMaker))
 
 ## Contributing
 Feel free to open new issues or submit pull requests for Marpat. If you'd like to contact me before doing so, feel free to get in touch (see Contact section below).
@@ -385,20 +385,6 @@ Before opening an issue or submitting a PR, I ask that you follow these guidelin
 
 ## Marpat Copyright & License
 Copyright (c) 2018 Lui de la Parra
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-## Orignal Camo Copyright & License
 Copyright (c) 2016 Scott Robinson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
