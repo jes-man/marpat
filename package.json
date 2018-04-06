@@ -7,6 +7,9 @@
     "email": "lui@mutesymphony.com",
     "url": "http://lui@mutesymphony.com"
   },
+  "scripts": {
+    "test": "mocha"
+  },
   "keywords": [
     "es6",
     "odm",
@@ -28,9 +31,6 @@
     "url": "git@github.com:luidog/marpat.git"
   },
   "license": "MIT",
-  "scripts": {
-    "test": "mocha"
-  },
   "engines": {
     "node": ">=2.0.0"
   },

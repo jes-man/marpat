@@ -1,9 +1,8 @@
 # Marpat
 
-Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Marpat](https://github.com/scottwrobinson/Marpat).
+Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Camo](https://github.com/scottwrobinson/camo). When integrating with FileMaker servers I found the need to limit
 
 ## Jump To
-* <a href="#why-do-we-need-another-odm">Why do we need another ODM?</a>
 * <a href="#advantages">Advantages</a>
 * <a href="#install-and-run">Install and Run</a>
 * <a href="#quick-start">Quick Start</a>
@@ -18,7 +17,6 @@ Marpat is lightweight object modeling tool that uses ES6 classes to model data. 
   * <a href="#misc">Misc.</a>
 * <a href="#transpiler-support">Transpiler Support</a>
 * <a href="#contributing">Contributing</a>
-* <a href="#contact">Contact</a>
 * <a href="#copyright-license">Copyright & License</a>
 
 ## Advantages
@@ -52,7 +50,7 @@ Before using any document methods, you must first connect to your underlying dat
 
 - MongoDB: 
   - Format: mongodb://[username:password@]host[:port][/db-name]
-  - Example: `const uri = 'mongodb://scott:abc123@localhost:27017/animals';`
+  - Example: `const uri = 'mongodb://Ben:abc123@localhost:27017/animals';`
 - NeDB:
   - Format: nedb://[directory-path] OR nedb://memory
   - Example: `const uri = 'nedb://data';`
@@ -313,7 +311,7 @@ Marpat provides hooks for you to execute code before and after critical parts of
 Hooks can be used not only on `Document` objects, but `EmbeddedDocument` objects as well. The embedded object's hooks will be called when it's parent `Document` is saved/validated/deleted (depending on the hook you provide).
 
 In order to create a hook, you must override a class method. The hooks currently provided, and their corresponding methods, are:
-
+- post-init: `postInit()`
 - pre-validate: `preValidate()`
 - post-validate: `postValidate()`
 - pre-save: `preSave()`
@@ -321,6 +319,7 @@ In order to create a hook, you must override a class method. The hooks currently
 - pre-delete: `preDelete()`
 - post-delete: `postDelete()`
 - post-find: `postFind()`
+
 
 Here is an example of using a hook (pre-delete, in this case):
 ```javascript

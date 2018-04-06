@@ -1466,7 +1466,7 @@ describe('Document', function() {
             let preValidateCalled = false;
             let preSaveCalled = false;
             let preDeleteCalled = false;
-
+            let preInit = false
             let postValidateCalled = false;
             let postSaveCalled = false;
             let postDeleteCalled = false;
@@ -1478,6 +1478,10 @@ describe('Document', function() {
 
                 static collectionName() {
                     return 'people';
+                }
+
+                preInit() {
+                    preInitCalled = true
                 }
 
                 preValidate() {
@@ -1511,6 +1515,7 @@ describe('Document', function() {
                 validateId(person);
 
                 // Pre/post save and validate should be called
+                expect(preInitCalled).to.be.equal(true);
                 expect(preValidateCalled).to.be.equal(true);
                 expect(preSaveCalled).to.be.equal(true);
                 expect(postValidateCalled).to.be.equal(true);
