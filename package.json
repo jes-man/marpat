@@ -39,8 +39,8 @@
     "lodash": "3.9.3"
   },
   "optionalDependencies": {
-    "mongodb": "2.0.42",
-    "nedb": "1.8.0"
+    "nedb": "1.8.0",
+    "mongodb": "^3.0.7"
   },
   "devDependencies": {
     "chai": "3.0.0",
