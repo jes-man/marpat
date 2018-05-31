@@ -1,4 +1,4 @@
-# Marpat [![Build Status](https://travis-ci.org/Luidog/fms-api-client.png?branch=master)](https://travis-ci.org/Luidog/marpat)
+# Marpat[![Build Status](https://travis-ci.org/Luidog/fms-api-client.png?branch=master)](https://travis-ci.org/Luidog/marpat)
 
 Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Camo](https://github.com/scottwrobinson/camo). When integrating with FileMaker servers I found a need for a local datastore alongside filemaker.
 
