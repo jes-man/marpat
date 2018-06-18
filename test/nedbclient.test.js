@@ -8,36 +8,40 @@ const Document = require('../index').Document;
 const validateId = require('./util').validateId;
 
 describe('NeDbClient', function() {
+  const url = 'nedb://memory';
+  let database = null;
 
-    const url = 'nedb://memory';
-    let database = null;
+  // TODO: This is acting weird. Randomly passes/fails. Seems to
+  // be caused by document.test.js. When that one doesn't run,
+  // this one always passes. Maybe some leftover files are still
+  // floating around due to document.test.js?
+  before(function(done) {
+    connect(url)
+      .then(function(db) {
+        database = db;
+        return database.dropDatabase();
+      })
+      .then(function() {
+        return done();
+      });
+  });
 
-    // TODO: This is acting weird. Randomly passes/fails. Seems to
-    // be caused by document.test.js. When that one doesn't run,
-    // this one always passes. Maybe some leftover files are still
-    // floating around due to document.test.js?
-    before(function(done) {
-        connect(url).then(function(db) {
-            database = db;
-            return database.dropDatabase();
-        }).then(function(){
-            return done();
-        });
-    });
+  beforeEach(function(done) {
+    done();
+  });
 
-    beforeEach(function(done) {
-        done();
-    });
+  afterEach(function(done) {
+    database
+      .dropDatabase()
+      .then(function() {})
+      .then(done, done);
+  });
 
-    afterEach(function(done) {
-        database.dropDatabase().then(function() {}).then(done, done);
-    });
+  after(function(done) {
+    done();
+  });
 
-    after(function(done) {
-        done();
-    }); 
-
-    /*describe('#dropDatabase()', function() {
+  /*describe('#dropDatabase()', function() {
         it('should drop the database and delete all its data', function(done) {
 
             console.log('here-2');
@@ -91,91 +95,100 @@ describe('NeDbClient', function() {
         });
     });*/
 
-    describe('id', function() {
-        it('should allow custom _id values', function(done) {
-            class School extends Document {
-                constructor() {
-                    super();
+  describe('id', function() {
+    it('should allow custom _id values', function(done) {
+      class School extends Document {
+        constructor() {
+          super();
 
-                    this.name = String;
-                }
+          this.name = String;
+        }
+      }
+
+      let school = School.create();
+      school._id = '1234567890abcdef';
+      school.name = 'South Park Elementary';
+
+      school
+        .save()
+        .then(function() {
+          validateId(school);
+          expect(school._id).to.be.equal('1234567890abcdef');
+          return School.findOne();
+        })
+        .then(function(s) {
+          validateId(s);
+          expect(s._id).to.be.equal('1234567890abcdef');
+        })
+        .then(done, done);
+    });
+  });
+
+  describe('indexes', function() {
+    it('should reject documents with duplicate values in unique-indexed fields', function(done) {
+      class User extends Document {
+        constructor() {
+          super();
+
+          this.schema({
+            name: String,
+            email: {
+              type: String,
+              unique: true
             }
+          });
+        }
+      }
 
-            let school = School.create();
-            school._id = '1234567890abcdef';
-            school.name = 'South Park Elementary';
+      let user1 = User.create();
+      user1.name = 'Bill';
+      user1.email = 'billy@example.com';
 
-            school.save().then(function() {
-                validateId(school);
-                expect(school._id).to.be.equal('1234567890abcdef');
-                return School.findOne();
-            }).then(function(s) {
-                validateId(s);
-                expect(s._id).to.be.equal('1234567890abcdef');
-            }).then(done, done);
-        });
+      let user2 = User.create();
+      user1.name = 'Billy';
+      user2.email = 'billy@example.com';
+
+      Promise.all([user1.save(), user2.save()])
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error.errorType).to.be.equal('uniqueViolated');
+        })
+        .then(done, done);
     });
 
-    describe('indexes', function() {
-        it('should reject documents with duplicate values in unique-indexed fields', function(done) {
-            class User extends Document {
-                constructor() {
-                    super();
+    it('should accept documents with duplicate values in non-unique-indexed fields', function(done) {
+      class User extends Document {
+        constructor() {
+          super();
 
-                    this.schema({
-                        name: String,
-                        email: {
-                            type: String,
-                            unique: true
-                        }
-                    });
-                }
+          this.schema({
+            name: String,
+            email: {
+              type: String,
+              unique: false
             }
+          });
+        }
+      }
 
-            let user1 = User.create();
-            user1.name = 'Bill';
-            user1.email = 'billy@example.com';
+      let user1 = User.create();
+      user1.name = 'Bill';
+      user1.email = 'billy@example.com';
 
-            let user2 = User.create();
-            user1.name = 'Billy';
-            user2.email = 'billy@example.com';
+      let user2 = User.create();
+      user1.name = 'Billy';
+      user2.email = 'billy@example.com';
 
-            Promise.all([user1.save(), user2.save()]).then(function() {
-                expect.fail(null, Error, 'Expected error, but got none.');
-            }).catch(function(error) {
-                expect(error.errorType).to.be.equal('uniqueViolated');
-            }).then(done, done);
-        });
-
-        it('should accept documents with duplicate values in non-unique-indexed fields', function(done) {
-            class User extends Document {
-                constructor() {
-                    super();
-
-                    this.schema({
-                        name: String,
-                        email: {
-                            type: String,
-                            unique: false
-                        }
-                    });
-                }
-            }
-
-            let user1 = User.create();
-            user1.name = 'Bill';
-            user1.email = 'billy@example.com';
-
-            let user2 = User.create();
-            user1.name = 'Billy';
-            user2.email = 'billy@example.com';
-
-            Promise.all([user1.save(), user2.save()]).then(function() {
-                validateId(user1);
-                validateId(user2);
-                expect(user1.email).to.be.equal('billy@example.com');
-                expect(user2.email).to.be.equal('billy@example.com');
-            }).then(done, done);
-        });
+      Promise.all([user1.save(), user2.save()])
+        .then(function() {
+          validateId(user1);
+          validateId(user2);
+          expect(user1.email).to.be.equal('billy@example.com');
+          expect(user2.email).to.be.equal('billy@example.com');
+        })
+        .then(done, done);
     });
+  });
 });
