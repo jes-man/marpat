@@ -1,6 +1,6 @@
 # Marpat[![Build Status](https://travis-ci.org/Luidog/fms-api-client.png?branch=master)](https://travis-ci.org/Luidog/marpat)
 
-Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Camo](https://github.com/scottwrobinson/camo). When integrating with FileMaker servers I found a need for a local datastore alongside filemaker.
+Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Camo](https://github.com/scottwrobinson/camo). When integrating with FileMaker servers I found a need for a local datastore alongside filemaker that could be encrypted and could scale effectively.
 
 ## Jump To
 
@@ -31,7 +31,7 @@ So, why use Marpat?
 
 ## Install and Run
 
-To use Marpat, you must first have installed **Node >2.0.x**, then run the following commands:
+To use Marpat, you must first have installed **Node >=8.0.x**, then run the following commands:
 
     npm install marpat --save
 
@@ -273,6 +273,8 @@ Dog.findOne({ name: 'Lassie' }).then(function(l) {
 *   `populate`: Boolean value to load all or no references. Pass an array of field names to only populate the specified references
     *   `Person.findOne({name: 'Billy'}, {populate: true})` populates all references in `Person` object
     *   `Person.findOne({name: 'Billy'}, {populate: ['address', 'spouse']})` populates only 'address' and 'spouse' in `Person` object
+    *   `select`: removes all properties from the returning data except those that match an array of values, or \_id and \_schema
+    *   `Person.findOne({}, {select: ['name']})` returns data with properties \_id, \_schema, and name. 
 
 `.find()` currently accepts the following options:
 
@@ -286,6 +288,16 @@ Dog.findOne({ name: 'Lassie' }).then(function(l) {
     *   `Person.find({}, {limit: 5})` returns a maximum of 5 `Person` objects
 *   `skip`: Skips the given number of documents and returns the rest
     *   `Person.find({}, {skip: 5})` skips the first 5 `Person` objects and returns all others
+*   `select`: removes all properties from the returning data except those that match an array of values, or \_id and \_schema
+    *   `Person.find({}, {select: ['name']})` returns data with properties \_id, \_schema, and name. 
+
+`.findOneAndUpdate()` currently accepts the following options:
+
+*   `populate`: Boolean value to load all or no references.
+    *   `Person.findOneAndUpdate({name: 'Ben'},{name: 'Ben Danger'},{lastName: 'Smith'}, {populate: true})` populates all references in `Person` object
+*   `select`: removes all properties from the returning data except those that match an array of values, or \_id and \_schema
+    *   `Person.findOneAndUpdate({name: 'Ben'},{name: 'Ben Danger'}, {select: ['name']})` returns data with properties \_id, \_schema, and name. 
+
 
 ### Deleting
 
@@ -399,7 +411,6 @@ Before opening an issue or submitting a PR, I ask that you follow these guidelin
 *   Any PR should contain only one feature or bug fix. If you have more than one, please submit them as separate PRs.
 *   Always try to include relevant tests with your PRs. If you aren't sure where a test should go or how to create one, feel free to ask.
 *   Include updates to the README when needed.
-*   Do not update the package version or CHANGELOG. I'll handle that for each release.
 
 ## Marpat Copyright & License
 
