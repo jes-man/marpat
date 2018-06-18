@@ -272,6 +272,86 @@ describe('Client', () => {
         .then(done, done);
     });
 
+    it('should populate all fields', done => {
+      let address = Address.create({
+        street: '123 Fake St.',
+        city: 'Cityville',
+        zipCode: 12345
+      });
+
+      let dog = Pet.create({
+        type: 'dog',
+        name: 'Fido'
+      });
+
+      let user = User.create({
+        firstName: 'Anakin',
+        lastName: 'Skywalker',
+        pet: dog,
+        address: address
+      });
+
+      Promise.all([address.save(), dog.save()])
+        .then(() => {
+          validateId(address);
+          validateId(dog);
+          return Promise.all([user.save()]);
+        })
+        .then(() => {
+          validateId(user);
+          return User.findOneAndUpdate(
+            { firstName: 'Anakin' },
+            { firstName: 'Darth' },
+            { populate: true }
+          );
+        })
+        .then(user => {
+          expect(user.pet).to.be.an.instanceof(Pet);
+          expect(user.address).to.be.an.instanceof(Address);
+        })
+        .then(done, done);
+    });
+
+    it('should not populate any fields', done => {
+      let address = Address.create({
+        street: '123 Fake St.',
+        city: 'Cityville',
+        zipCode: 12345
+      });
+
+      let dog = Pet.create({
+        type: 'dog',
+        name: 'Fido'
+      });
+
+      let user = User.create({
+        firstName: 'Anakin',
+        lastName: 'Skywalker',
+        pet: dog,
+        address: address
+      });
+
+      Promise.all([address.save(), dog.save()])
+        .then(() => {
+          validateId(address);
+          validateId(dog);
+          return Promise.all([user.save()]);
+        })
+        .then(() => {
+          validateId(user);
+          return User.findOneAndUpdate(
+            { firstName: 'Anakin' },
+            { firstName: 'Darth' },
+            { populate: false }
+          );
+        })
+        .then(user => {
+          expect(isNativeId(user.pet)).to.be.true;
+          expect(isNativeId(user.address)).to.be.true;
+        })
+        .then(done, done);
+    });
+
     it('should return only the selected information', done => {
       let data = getData1();
 
