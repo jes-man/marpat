@@ -5,7 +5,7 @@
 const { expect } = require('chai');
 const { connect } = require('../index');
 const { Document } = require('../index');
-const Data = require('./data');
+const { Data } = require('./data');
 const getData1 = require('./util').data1;
 const getData2 = require('./util').data2;
 const { validateData1 } = require('./util');

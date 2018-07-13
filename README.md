@@ -366,8 +366,8 @@ The code above shows a pre-delete hook that deletes all the employees of the com
 
 ### Misc.
 
-*   `Marpat.getClient()`: Retrieves the marpat database client
-*   `Marpat.getClient().driver()`: Retrieves the underlying database driver (`MongoClient` or a map of NeDB collections)
+*   `Marpat.Client()`: Retrieves the marpat database client
+*   `Marpat.Client().driver()`: Retrieves the underlying database driver (`MongoClient` or a map of NeDB collections)
 *   `Document.toJSON()`: Serializes the given document to just the data, which includes nested and referenced data
 
 ## Transpiler Support
