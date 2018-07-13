@@ -1,7 +1,10 @@
 'use strict';
 
-exports.connect = require('./lib/db').connect;
-exports.getClient = require('./lib/clients').getClient;
+const { connect, Client, Document, EmbeddedDocument } = require('./lib');
 
-exports.Document = require('./lib/document');
-exports.EmbeddedDocument = require('./lib/embedded-document');
+module.exports = {
+  connect,
+  Client,
+  Document,
+  EmbeddedDocument
+};
