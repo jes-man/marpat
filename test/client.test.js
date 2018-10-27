@@ -253,6 +253,20 @@ describe('Client', () => {
   });
 
   describe('#findOneAndUpdate()', () => {
+    it('should return null if there is no document to update', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          return Data.findOneAndUpdate({ number: 3 }, { source: 'wired' });
+        })
+        .then(d => {
+          expect(d).to.equal(null);
+        })
+        .then(done, done);
+    });
     it('should load and update a single object from the collection', done => {
       let data = getData1();
 
@@ -393,9 +407,31 @@ describe('Client', () => {
         })
         .then(done, done);
     });
+    it('requires at least two arguments', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          expect(() => Data.findOneAndUpdate({ number: 3 })).to.throw();
+        })
+        .then(done, done);
+    });
   });
 
   describe('#findOneAndDelete()', () => {
+    it('requires at least one arguments', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          expect(() => Data.findOneAndDelete()).to.throw();
+        })
+        .then(done, done);
+    });
     it('should load and delete a single object from the collection', done => {
       let data = getData1();
 
