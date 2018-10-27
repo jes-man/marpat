@@ -412,7 +412,96 @@ describe('Embedded', function() {
         })
         .then(done, done);
     });
+    it('should accept a validation function', function(done) {
+      class EmbeddedModel extends EmbeddedDocument {
+        constructor() {
+          super();
+          this.num = { type: Number, validate: value => value !== 1, max: 10 };
+        }
+      }
 
+      class DocumentModel extends Document {
+        constructor() {
+          super();
+          this.emb = EmbeddedModel;
+        }
+      }
+
+      let data = DocumentModel.create();
+      data.emb = EmbeddedModel.create();
+      data.emb.num = 1;
+
+      data
+        .save()
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error).to.be.instanceof(ValidationError);
+        })
+        .then(done, done);
+    });
+    it('should accept a validation function', function(done) {
+      class EmbeddedModel extends EmbeddedDocument {
+        constructor() {
+          super();
+          this.num = { type: Number, validate: value => value !== 1, max: 10 };
+        }
+      }
+
+      class DocumentModel extends Document {
+        constructor() {
+          super();
+          this.emb = EmbeddedModel;
+        }
+      }
+
+      let data = DocumentModel.create();
+      data.emb = EmbeddedModel.create();
+      data.emb.num = 26;
+
+      data
+        .save()
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error).to.be.instanceof(ValidationError);
+          expect(error.message).to.contain('max');
+        })
+        .then(done, done);
+    });
+    it('should accept an array of validation functions', function(done) {
+      class EmbeddedModel extends EmbeddedDocument {
+        constructor() {
+          super();
+          this.num = { type: Number, validate: value => value !== 1 };
+        }
+      }
+
+      class DocumentModel extends Document {
+        constructor() {
+          super();
+          this.embs = [EmbeddedModel];
+        }
+      }
+
+      let data = DocumentModel.create();
+      let emb1 = EmbeddedModel.create({ num: 2 });
+      let emb2 = EmbeddedModel.create({ num: 1 });
+      data.embs.push(emb1);
+      data.embs.push(emb2);
+
+      data
+        .save()
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error).to.be.instanceof(ValidationError);
+        })
+        .then(done, done);
+    });
     it('should validate array of embedded values', function(done) {
       class Money extends EmbeddedDocument {
         constructor() {

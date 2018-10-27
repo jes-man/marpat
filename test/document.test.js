@@ -1712,9 +1712,9 @@ describe('Document', function() {
           });
         }
 
-        postFind(){
-          this.didFind = true
-          return this.didFind
+        postFind() {
+          this.didFind = true;
+          return this.didFind;
         }
 
         static collectionName() {
@@ -1745,8 +1745,8 @@ describe('Document', function() {
           });
         }
 
-        postFind(){
-          this.didFind = true
+        postFind() {
+          this.didFind = true;
         }
 
         static collectionName() {
@@ -1766,7 +1766,96 @@ describe('Document', function() {
         .then(done, done);
     });
   });
+  describe('Validation Capabilities', function() {
+    it('should accept a validation function', function(done) {
+      class Person extends Document {
+        constructor() {
+          super();
 
+          this.name = String;
+          this.age = Number;
+          this.isAlive = Boolean;
+          this.children = [String];
+          this.spouse = {
+            type: String,
+            validate: value => value === 'joan',
+            default: null
+          };
+        }
+
+        static collectionName() {
+          return 'people';
+        }
+      }
+
+      let person = Person.create({
+        name: 'Scott',
+        age: 28,
+        isAlive: true,
+        children: ['Billy', 'Timmy'],
+        spouse: 'joan'
+      });
+
+      person
+        .save()
+        .then(function() {
+          validateId(person);
+          expect(person.name).to.be.equal('Scott');
+          expect(person.age).to.be.equal(28);
+          expect(person.isAlive).to.be.equal(true);
+          expect(person.children).to.have.length(2);
+          expect(person.spouse).to.be.equal('joan');
+
+          let json = person.toJSON();
+
+          expect(json.name).to.be.equal('Scott');
+          expect(json.age).to.be.equal(28);
+          expect(json.isAlive).to.be.equal(true);
+          expect(json.children).to.have.length(2);
+          expect(json.spouse).to.be.equal('joan');
+          expect(json._id).to.be.equal(person._id.toString());
+        })
+        .then(done, done);
+    });
+    it('should reject if validation function fails', function(done) {
+      class Person extends Document {
+        constructor() {
+          super();
+
+          this.name = String;
+          this.age = Number;
+          this.isAlive = Boolean;
+          this.children = [String];
+          this.spouse = {
+            type: String,
+            validate: value => value === 'joan',
+            default: null
+          };
+        }
+
+        static collectionName() {
+          return 'people';
+        }
+      }
+
+      let person = Person.create({
+        name: 'Scott',
+        age: 28,
+        isAlive: true,
+        children: ['Billy', 'Timmy'],
+        spouse: 'pam'
+      });
+
+      person
+        .save()
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error).to.be.instanceof(ValidationError);
+        }).then(done, done);
+    });
+  });
   describe('serialize', function() {
     it('should serialize data to JSON', function(done) {
       class Person extends Document {
@@ -1813,6 +1902,57 @@ describe('Document', function() {
           expect(json.isAlive).to.be.equal(true);
           expect(json.children).to.have.length(2);
           expect(json.spouse).to.be.null;
+          expect(json._id).to.be.equal(person._id.toString());
+        })
+        .then(done, done);
+    });
+
+    it('should serialize data to JSON', function(done) {
+      class Person extends Document {
+        constructor() {
+          super();
+
+          this.name = String;
+          this.age = Number;
+          this.isAlive = Boolean;
+          this.children = [String];
+          this.spouse = {
+            type: String,
+            private: true,
+            default: null
+          };
+        }
+
+        static collectionName() {
+          return 'people';
+        }
+      }
+
+      let person = Person.create({
+        name: 'Scott',
+        age: 28,
+        isAlive: true,
+        children: ['Billy', 'Timmy'],
+        spouse: 'Joan'
+      });
+
+      person
+        .save()
+        .then(function() {
+          validateId(person);
+          expect(person.name).to.be.equal('Scott');
+          expect(person.age).to.be.equal(28);
+          expect(person.isAlive).to.be.equal(true);
+          expect(person.children).to.have.length(2);
+          expect(person.spouse).to.be.equal('Joan');
+
+          let json = person.toJSON();
+
+          expect(json.name).to.be.equal('Scott');
+          expect(json.age).to.be.equal(28);
+          expect(json.isAlive).to.be.equal(true);
+          expect(json.children).to.have.length(2);
+          expect(json.spouse).to.be.undefined;
           expect(json._id).to.be.equal(person._id.toString());
         })
         .then(done, done);
