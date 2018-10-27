@@ -1,6 +1,6 @@
 'use strict';
 
-/* global describe before beforeEach afterEach it */
+/* global describe before beforeEach afterEach, after, it */
 
 const { expect } = require('chai');
 const { connect } = require('../index');
@@ -21,20 +21,18 @@ describe('Client', () => {
     connect(url)
       .then(db => {
         database = db;
-        return database.dropDatabase();
+        database.dropDatabase();
       })
-      .then(() => {
-        return done();
-      });
+      .then(() => done());
   });
 
   beforeEach(done => {
     done();
   });
 
-  afterEach(done => database.dropDatabase().then(() => done()));
+  afterEach(() => database.dropDatabase());
 
-  after(done => database.dropDatabase().then(() => done()));
+  after(() => database.dropDatabase());
 
   describe('#save()', () => {
     it('should persist the object and its members to the database', done => {
