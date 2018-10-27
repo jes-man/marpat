@@ -933,4 +933,5 @@ describe('Client', () => {
         .then(done, done);
     });
   });
+
 });
