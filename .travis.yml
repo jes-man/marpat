@@ -8,3 +8,4 @@ services:
 before_script:
 - node --version
 - npm --version
+after_success: npm run coverage
