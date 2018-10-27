@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "nyc _mocha --recursive ./test --timeout=30000 --exit",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "report": "nyc report --reporter=html",
+    "coverage": "nyc report --reporter=html --reporter=text-lcov | coveralls",
     "generate-readme": "node_modules/.bin/readme package.json --tests --travis > README.md",
     "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.js --verbose"
   },
