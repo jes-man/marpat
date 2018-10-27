@@ -1700,6 +1700,71 @@ describe('Document', function() {
         })
         .then(done, done);
     });
+    it('should call postFind when findOne is used', function(done) {
+      class Person extends Document {
+        constructor() {
+          super();
+          this.schema({
+            didFind: {
+              type: Boolean,
+              default: false
+            }
+          });
+        }
+
+        postFind(){
+          this.didFind = true
+          return this.didFind
+        }
+
+        static collectionName() {
+          return 'people';
+        }
+      }
+
+      let person = Person.create();
+      person
+        .save()
+        .then(function() {
+          validateId(person);
+          return Person.findOne().then(person => {
+            expect(person.didFind).to.be.equal(true);
+          });
+        })
+        .then(done, done);
+    });
+    it('should not call postFind when find is used', function(done) {
+      class Person extends Document {
+        constructor() {
+          super();
+          this.schema({
+            didFind: {
+              type: Boolean,
+              default: false
+            }
+          });
+        }
+
+        postFind(){
+          this.didFind = true
+        }
+
+        static collectionName() {
+          return 'people';
+        }
+      }
+
+      let person = Person.create();
+      person
+        .save()
+        .then(function() {
+          validateId(person);
+          return Person.find().then(people => {
+            expect(people[0].didFind).to.be.equal(false);
+          });
+        })
+        .then(done, done);
+    });
   });
 
   describe('serialize', function() {

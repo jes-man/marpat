@@ -45,9 +45,6 @@ describe('Validation Utility Tests', () => {
           super();
           this.schema({});
         }
-        documentClass() {
-          return 'hello'
-        }
       }
       let doc = new TestDocument();
       return expect(isSupportedType(doc)).to.be.true;
