@@ -3,7 +3,7 @@
 /* global describe it */
 
 const { expect } = require('chai');
-const { EmbeddedDocument } = require('../lib/index.js');
+const { EmbeddedDocument, Document } = require('../lib/index.js');
 const { isType, isSupportedType, isValidType } = require('../lib/validate');
 
 describe('Validation Utility Tests', () => {
@@ -39,6 +39,19 @@ describe('Validation Utility Tests', () => {
       expect(isSupportedType(Array)).to.be.true);
     it('should support booleans', () =>
       expect(isSupportedType(Boolean)).to.be.true);
+    it('should support Documents', () => {
+      class TestDocument extends Document {
+        constructor() {
+          super();
+          this.schema({});
+        }
+        documentClass() {
+          return 'hello'
+        }
+      }
+      let doc = new TestDocument();
+      return expect(isSupportedType(doc)).to.be.true;
+    });
   });
 
   describe('it rejects multiple types on one property', () => {
