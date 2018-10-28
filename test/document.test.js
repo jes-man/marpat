@@ -8,9 +8,7 @@ const Document = require('../index').Document;
 const isDocument = require('../lib/validate').isDocument;
 const ValidationError = require('../lib/errors').ValidationError;
 const { Data } = require('./data');
-const validateId = require('./util').validateId;
-const fail = require('./util').fail;
-const expectError = require('./util').expectError;
+const { validateId, fail, expectError } = require('./util');
 
 describe('Document Capabilities', function() {
   // TODO: Should probably use mock database client...

@@ -421,7 +421,7 @@ describe('Client', () => {
   });
 
   describe('#findOneAndDelete()', () => {
-    it('requires at least one arguments', function(done) {
+    it('requires at least one argument', function(done) {
       let data = getData1();
 
       data
@@ -520,6 +520,19 @@ describe('Client', () => {
         .then(done, done);
     });
 
+    it('should reject invalid queries', done => {
+      City.find(1)
+        .then(result => {
+          console.log(result);
+          return done();
+        })
+        .catch(error => {
+          console.log(error);
+          expect(error).to.be.an('string');
+          done();
+        });
+    });
+
     it('should sort results in ascending order', done => {
       City.find({}, { sort: 'population' })
         .then(cities => {
@@ -544,6 +557,42 @@ describe('Client', () => {
           expect(cities[0].population).to.be.equal(30720);
           expect(cities[1].population).to.be.equal(4388);
           expect(cities[2].population).to.be.equal(800);
+        })
+        .then(done, done);
+    });
+
+    it('should sort results using multiple keys', done => {
+      let AlphaVille = City.create({
+        name: 'Alphaville',
+        population: 4388
+      });
+
+      let BetaTown = City.create({
+        name: 'Beta Town',
+        population: 4388
+      });
+
+      Promise.all([AlphaVille.save(), BetaTown.save()])
+        .then(() => {
+          return City.find({}, { sort: ['population', 1, '-name'] });
+        })
+        .then(cities => {
+          expect(cities).to.have.length(5);
+          validateId(cities[0]);
+          validateId(cities[1]);
+          validateId(cities[2]);
+          validateId(cities[3]);
+          validateId(cities[4]);
+          expect(cities[0].population).to.be.equal(800);
+          expect(cities[0].name).to.be.equal('Quahog');
+          expect(cities[1].population).to.be.equal(4388);
+          expect(cities[1].name).to.be.equal('South Park');
+          expect(cities[2].population).to.be.equal(4388);
+          expect(cities[2].name).to.be.equal('Beta Town');
+          expect(cities[3].population).to.be.equal(4388);
+          expect(cities[3].name).to.be.equal('Alphaville');
+          expect(cities[4].population).to.be.equal(30720);
+          expect(cities[4].name).to.be.equal('Springfield');
         })
         .then(done, done);
     });
@@ -812,6 +861,22 @@ describe('Client', () => {
         .then(done, done);
     });
 
+    it('should disregard unsupported options', done => {
+      let data1 = getData1();
+      let data2 = getData2();
+
+      Promise.all([data1.save(), data2.save()])
+        .then(() => {
+          validateId(data1);
+          validateId(data2);
+          return Data.count({});
+        })
+        .then(count => {
+          expect(count).to.be.equal(2);
+        })
+        .then(done, done);
+    });
+
     it('should return 2 matching objects from the collection', done => {
       let data1 = getData1();
       let data2 = getData2();
@@ -933,5 +998,4 @@ describe('Client', () => {
         .then(done, done);
     });
   });
-
 });

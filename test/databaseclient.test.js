@@ -119,16 +119,6 @@ describe('DatabaseClient', function() {
       let client = new ErrorClient();
       expect(() => client.createIndex()).to.throw();
     });
-    it('should require a createIndex method', function() {
-      class ErrorClient extends DatabaseClient {
-        constructor() {
-          super();
-          this.name = String;
-        }
-      }
-      let client = new ErrorClient();
-      expect(() => client.createIndex()).to.throw();
-    });
     it('should require a (static) connect method', function() {
       class ErrorClient extends DatabaseClient {
         constructor() {

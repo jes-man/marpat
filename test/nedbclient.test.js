@@ -1,20 +1,117 @@
 'use strict';
 
-const _ = require('lodash');
-const fs = require('fs');
-const expect = require('chai').expect;
-const connect = require('../index').connect;
-const Document = require('../index').Document;
-const validateId = require('./util').validateId;
+/* global describe before beforeEach afterEach after it */
+
+const { expect } = require('chai');
+const { connect, Document } = require('../index');
+const { validateId } = require('./util');
+const chaiAsPromised = require('chai-as-promised');
+const chai = require('chai');
+
+chai.use(chaiAsPromised);
+
+describe('NeDbClient', function() {
+  const url = 'nedb://data';
+  let database;
+  before(function(done) {
+    connect(url)
+      .then(function(db) {
+        database = db;
+        return database.dropDatabase();
+      })
+      .then(function() {
+        return done();
+      });
+  });
+  it('should create a file based store', done => {
+    class Person extends Document {
+      constructor() {
+        super();
+        this.schema({
+          name: {
+            type: String
+          }
+        });
+      }
+    }
+    let person = Person.create({ name: 'Han Solo' });
+    person.save().then(person => {
+      expect(person).to.be.an('object');
+      done();
+    });
+  });
+  it('should return collections as a driver', done => {
+    class Person extends Document {
+      constructor() {
+        super();
+        this.schema({
+          name: {
+            type: String
+          }
+        });
+      }
+    }
+    let person = Person.create({ name: 'Han Solo' });
+    expect(global.CLIENT.driver()).to.be.an('object');
+    done();
+  });
+  it('should create indexes without options', done => {
+    class Person extends Document {
+      constructor() {
+        super();
+        this.schema({
+          name: {
+            type: String
+          }
+        });
+      }
+    }
+    let person = Person.create({ name: 'Han Solo' });
+    person.save().then(person => {
+      expect(global.CLIENT.createIndex('Persons', 'name')).to.equal(undefined);
+      done();
+    });
+  });
+  it('should reject a count with an error', done => {
+    class Person extends Document {
+      constructor() {
+        super();
+        this.schema({
+          name: {
+            type: String
+          }
+        });
+      }
+    }
+    expect(Person.count().catch(error => error)).to.eventually.be.an('object');
+    done();
+  });
+  it('should drop databases when used on the File System', () => {
+    class Person extends Document {
+      constructor() {
+        super();
+        this.schema({
+          name: {
+            type: String
+          }
+        });
+      }
+    }
+    let person = Person.create({ name: 'Han Solo' });
+
+    expect(
+      person.save().then(person => database.dropDatabase())
+    ).to.eventually.equal(undefined);
+  });
+  it('should not delete files if there are no collections', () => {
+    expect(database.dropDatabase()).to.eventually.equal(undefined);
+  });
+});
 
 describe('NeDbClient', function() {
   const url = 'nedb://memory';
   let database = null;
 
-  // TODO: This is acting weird. Randomly passes/fails. Seems to
-  // be caused by document.test.js. When that one doesn't run,
-  // this one always passes. Maybe some leftover files are still
-  // floating around due to document.test.js?
   before(function(done) {
     connect(url)
       .then(function(db) {
@@ -40,60 +137,6 @@ describe('NeDbClient', function() {
   after(function(done) {
     done();
   });
-
-  /*describe('#dropDatabase()', function() {
-        it('should drop the database and delete all its data', function(done) {
-
-            console.log('here-2');
-
-            let data1 = getData1();
-            let data2 = getData2();
-
-            console.log('here-22');
-
-            data1.save().then(function(d) {
-                console.log('here-1');
-                validateId(d);
-                return data2.save();
-            }).then(function(d) {
-                console.log('here00');
-                validateId(d);
-            }).then(function() {
-                console.log('here0');
-                // Validate the client CREATED the necessary file(s)
-                expect(_.isEmpty(database.driver())).to.not.be.true;
-                return new Promise(function(resolve, reject) {
-                    console.log('here1');
-                    fs.readdir(database._path, function(error, files) {
-                        let dbFiles = [];
-                        files.forEach(function(f) {
-                            if (_.endsWith(f, '.db')) dbFiles.push(f);
-                        });
-                        expect(dbFiles).to.have.length(1);
-                        resolve();
-                    });
-                });
-            }).then(function() {
-                console.log('here2');
-                return database.dropDatabase();
-            }).then(function() {
-                console.log('here3');
-                // Validate the client DELETED the necessary file(s)
-                expect(_.isEmpty(database.driver())).to.be.true;
-                return new Promise(function(resolve, reject) {
-                    console.log('here4');
-                    fs.readdir(database._path, function(error, files) {
-                        let dbFiles = [];
-                        files.forEach(function(f) {
-                            if (_.endsWith(f, '.db')) dbFiles.push(f);
-                        });
-                        expect(dbFiles).to.have.length(0);
-                        resolve();
-                    });
-                });
-            }).then(done, done);
-        });
-    });*/
 
   describe('id', function() {
     it('should allow custom _id values', function(done) {

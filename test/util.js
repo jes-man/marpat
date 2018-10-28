@@ -1,7 +1,7 @@
 'use strict';
 
-const expect = require('chai').expect;
-const inherits = require('util').inherits;
+const { expect } = require('chai');
+const { inherits } = require('util');
 const { Data } = require('./data');
 
 exports.validateId = function(obj) {
