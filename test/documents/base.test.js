@@ -2,20 +2,12 @@
 
 /* global describe before beforeEach afterEach after it */
 
-const expect = require('chai').expect;
-const connect = require('../index').connect;
-const BaseDocument = require('../lib/base-document');
-const isDocument = require('../lib/validate').isDocument;
-const ValidationError = require('../lib/errors').ValidationError;
-const { Data } = require('./data');
-const validateId = require('./util').validateId;
-const fail = require('./util').fail;
-const expectError = require('./util').expectError;
+const { expect } = require('chai');
+const { connect } = require('../../index');
+const BaseDocument = require('../../lib/base-document');
 
 describe('Base Document', function() {
-  // TODO: Should probably use mock database client...
   const url = 'nedb://memory';
-  //const url = 'mongodb://localhost/camo_test';
   let database = null;
 
   before(function(done) {

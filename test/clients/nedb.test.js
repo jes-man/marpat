@@ -14,7 +14,7 @@ const chai = require('chai');
 
 chai.use(chaiAsPromised);
 
-describe('NeDB Client', () => {
+describe('NeDB In Memory Capabilities', () => {
   const url = 'nedb://memory';
   let database = null;
 
@@ -988,8 +988,8 @@ describe('NeDB Client', () => {
   });
 });
 
-describe('NeDbClient', function() {
-  const url = 'nedb://data';
+describe('NeDB File System Capabilities', function() {
+  const url = 'nedb://nedbdata';
   let database;
   before(function(done) {
     connect(url)

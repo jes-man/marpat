@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 const { inherits } = require('util');
-const { Data } = require('./data');
+const { Data } = require('./mocks');
 
 exports.validateId = function(obj) {
   expect(obj).to.not.be.null;

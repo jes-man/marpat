@@ -4,7 +4,7 @@
 
 const { expect } = require('chai');
 
-const DatabaseClient = require('../lib/clients/client');
+const DatabaseClient = require('../../lib/clients/client');
 
 describe('DatabaseClient', function() {
   describe('Required Methods', function() {

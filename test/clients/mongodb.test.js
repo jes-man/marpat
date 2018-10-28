@@ -5,9 +5,10 @@
 const { expect } = require('chai');
 const { ObjectId } = require('mongodb');
 const { connect, Document } = require('../../index');
-const { Data } = require('../data');
+const { Data } = require('../mocks');
 const getData1 = require('../util').data1;
 const getData2 = require('../util').data2;
+const { Address } = require('../mocks');
 const { validateData1, validateId } = require('../util');
 const { isNativeId } = require('../../lib/validate');
 
@@ -32,34 +33,6 @@ describe('MongoDB Client', () => {
 
   after(() => database.dropDatabase());
 
-  describe('#save()', () => {
-    it('should persist the object and its members to the database', done => {
-      let data = getData1();
-
-      data
-        .save()
-        .then(() => {
-          validateId(data);
-          validateData1(data);
-        })
-        .then(done, done);
-    });
-  });
-
-  class Address extends Document {
-    constructor() {
-      super();
-
-      this.street = String;
-      this.city = String;
-      this.zipCode = Number;
-    }
-
-    static collectionName() {
-      return 'addresses';
-    }
-  }
-
   class Pet extends Document {
     constructor() {
       super();
@@ -83,6 +56,20 @@ describe('MongoDB Client', () => {
       });
     }
   }
+
+  describe('#save()', () => {
+    it('should persist the object and its members to the database', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+        })
+        .then(done, done);
+    });
+  });
 
   describe('#findOne()', () => {
     it('should load a single object from the collection', done => {

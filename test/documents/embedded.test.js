@@ -1,22 +1,14 @@
 'use strict';
 
-const _ = require('lodash');
-const fs = require('fs');
-const expect = require('chai').expect;
-const connect = require('../index').connect;
-const Document = require('../index').Document;
-const EmbeddedDocument = require('../index').EmbeddedDocument;
-const isDocument = require('../lib/validate').isDocument;
-const ValidationError = require('../lib/errors').ValidationError;
-const { Data } = require('./data');
-const getData1 = require('./util').data1;
-const getData2 = require('./util').data2;
-const validateId = require('./util').validateId;
+/* global describe before beforeEach afterEach after it */
+
+const { expect } = require('chai');
+const { Document, EmbeddedDocument, connect } = require('../../index');
+const { ValidationError } = require('../../lib/errors');
+const { validateId } = require('../util');
 
 describe('Embedded', function() {
-  // TODO: Should probably use mock database client...
   const url = 'nedb://memory';
-  //const url = 'mongodb://localhost/camo_test';
   let database = null;
 
   before(function(done) {
