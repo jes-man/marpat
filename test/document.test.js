@@ -878,7 +878,6 @@ describe('Document Capabilities', function() {
           expect.fail(null, Error, 'Expected error, but got none.');
         })
         .catch(function(error) {
-          console.log(error);
           expect(error).to.be.instanceof(ValidationError);
         })
         .then(done, done);
