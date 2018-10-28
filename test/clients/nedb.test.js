@@ -3,18 +3,15 @@
 /* global describe before beforeEach afterEach, after, it */
 
 const { expect } = require('chai');
-const { connect } = require('../index');
-const { Document } = require('../index');
-const { Data } = require('./data');
-const getData1 = require('./util').data1;
-const getData2 = require('./util').data2;
-const { validateData1 } = require('./util');
-const { validateId } = require('./util');
-const { isNativeId } = require('../lib/validate');
+const { connect, Document } = require('../../index');
+const { Data } = require('../data');
+const getData1 = require('../util').data1;
+const getData2 = require('../util').data2;
+const { validateData1, validateId } = require('../util');
+const { isNativeId } = require('../../lib/validate');
 
-describe('Client', () => {
+describe('NeDB Client', () => {
   const url = 'nedb://memory';
-  //const url = 'mongodb://localhost/camo_test';
   let database = null;
 
   before(done => {
