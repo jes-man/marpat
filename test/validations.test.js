@@ -3,7 +3,7 @@
 /* global describe it */
 
 const { expect } = require('chai');
-const { EmbeddedDocument, Document } = require('../lib/index.js');
+const { EmbeddedDocument, Document } = require('../index.js');
 const { isType, isSupportedType, isValidType } = require('../lib/validate');
 
 describe('Validation Utility Tests', () => {

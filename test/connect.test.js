@@ -35,7 +35,7 @@ describe('Connect Capability', () => {
     it('should connect to a mongodb connection', function() {
       return expect(connect('mongodb://127.0.0.1:27017/marpat'))
         .to.eventually.be.an('object')
-        .with.all.keys('_mongo', '_url');
+        .with.all.keys('_mongo', '_client', '_url');
     });
     it('should reject an unrecognized connection', function() {
       return expect(

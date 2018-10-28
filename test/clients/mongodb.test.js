@@ -860,6 +860,20 @@ describe('MongoDB Client', () => {
         })
         .then(done, done);
     });
+    it('should return zero if there are no items to remove', done => {
+      let data = getData1();
+
+      data
+        .delete()
+        .then(numDeleted => {
+          expect(numDeleted).to.be.equal(0);
+          return Data.findOne({ item: 99 });
+        })
+        .then(d => {
+          expect(d).to.be.null;
+        })
+        .then(done, done);
+    });
   });
 
   describe('#deleteOne()', () => {
@@ -875,6 +889,19 @@ describe('MongoDB Client', () => {
         .then(numDeleted => {
           expect(numDeleted).to.be.equal(1);
           return Data.findOne({ number: 1 });
+        })
+        .then(d => {
+          expect(d).to.be.null;
+        })
+        .then(done, done);
+    });
+    it('should return zero if there are no items to remove', done => {
+      let data = getData1();
+      data;
+      Data.deleteOne({ bad: 1 })
+        .then(numDeleted => {
+          expect(numDeleted).to.be.equal(0);
+          return Data.findOne({ item: 99 });
         })
         .then(d => {
           expect(d).to.be.null;
@@ -944,38 +971,6 @@ describe('MongoDB Client', () => {
         })
         .then(done, done);
     });
-  });
-});
-
-describe('MongoClient - old', function() {
-  const url = 'mongodb://127.0.0.1:27017/marpat';
-  let options = {};
-  let database = null;
-
-  before(function(done) {
-    connect(url, options)
-      .then(function(db) {
-        database = db;
-        return database.dropDatabase();
-      })
-      .then(function() {
-        return done();
-      });
-  });
-
-  beforeEach(function(done) {
-    done();
-  });
-
-  afterEach(function(done) {
-    database
-      .dropDatabase()
-      .then(function() {})
-      .then(done, done);
-  });
-
-  after(function(done) {
-    done();
   });
 
   describe('id', function() {
@@ -1137,6 +1132,15 @@ describe('MongoClient - old', function() {
         })
         .then(done, done);
     });
+  });
+
+  describe('Close Database Connection', done => {
+    connect(url)
+      .then(db => {
+        database = db;
+        database.close();
+      })
+      .then(() => done());
   });
 
   describe('indexes', function() {
