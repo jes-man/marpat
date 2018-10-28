@@ -8,7 +8,7 @@ const { connect, Document } = require('../../index');
 const { Data } = require('../mocks');
 const getData1 = require('../util').data1;
 const getData2 = require('../util').data2;
-const { Address } = require('../mocks');
+const { Address, Pet, User } = require('../mocks');
 const { validateData1, validateId } = require('../util');
 const { isNativeId } = require('../../lib/validate');
 
@@ -32,31 +32,6 @@ describe('MongoDB Client', () => {
   afterEach(() => database.dropDatabase());
 
   after(() => database.dropDatabase());
-
-  class Pet extends Document {
-    constructor() {
-      super();
-
-      this.schema({
-        type: String,
-        name: String
-      });
-    }
-  }
-
-  class User extends Document {
-    constructor() {
-      super();
-
-      this.schema({
-        firstName: String,
-        lastName: String,
-        pet: Pet,
-        address: Address
-      });
-    }
-  }
-
   describe('#save()', () => {
     it('should persist the object and its members to the database', done => {
       let data = getData1();

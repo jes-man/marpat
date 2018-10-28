@@ -4,12 +4,13 @@
 
 const { expect } = require('chai');
 const { connect, Document } = require('../../index');
-const { Data } = require('../data');
 const getData1 = require('../util').data1;
 const getData2 = require('../util').data2;
 const { validateData1, validateId } = require('../util');
+const { Address, Pet, User, Data } = require('../mocks');
 const { isNativeId } = require('../../lib/validate');
 const chaiAsPromised = require('chai-as-promised');
+
 const chai = require('chai');
 
 chai.use(chaiAsPromised);
@@ -48,44 +49,6 @@ describe('NeDB In Memory Capabilities', () => {
         .then(done, done);
     });
   });
-
-  class Address extends Document {
-    constructor() {
-      super();
-
-      this.street = String;
-      this.city = String;
-      this.zipCode = Number;
-    }
-
-    static collectionName() {
-      return 'addresses';
-    }
-  }
-
-  class Pet extends Document {
-    constructor() {
-      super();
-
-      this.schema({
-        type: String,
-        name: String
-      });
-    }
-  }
-
-  class User extends Document {
-    constructor() {
-      super();
-
-      this.schema({
-        firstName: String,
-        lastName: String,
-        pet: Pet,
-        address: Address
-      });
-    }
-  }
 
   describe('#findOne()', () => {
     it('should load a single object from the collection', done => {
