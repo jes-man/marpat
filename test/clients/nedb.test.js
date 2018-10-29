@@ -3,7 +3,7 @@
 /* global describe before beforeEach afterEach, after, it */
 
 const { expect } = require('chai');
-const { connect, Document } = require('../../index');
+const { connect, Document, Client } = require('../../index');
 const getData1 = require('../util').data1;
 const getData2 = require('../util').data2;
 const { validateData1, validateId } = require('../util');
@@ -14,6 +14,217 @@ const chaiAsPromised = require('chai-as-promised');
 const chai = require('chai');
 
 chai.use(chaiAsPromised);
+
+describe('Base NeDB Client', () => {
+  const url = 'nedb://memory';
+  let database = null;
+
+  before(done => {
+    connect(url)
+      .then(db => {
+        database = db;
+        database.dropDatabase();
+      })
+      .then(() => done());
+  });
+
+  beforeEach(done => {
+    done();
+  });
+
+  afterEach(() => database.dropDatabase());
+
+  after(() => database.dropDatabase());
+
+  describe('#save()', () => {
+    it('should reject if it can not update the object', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().save('Datas', undefined, data);
+        })
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+
+  describe('#delete()', () => {
+    it('should reject if it can not delete the object', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().delete('Datas', { $nin: -2 });
+        })
+        .then(function(result) {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+    it('should return 0 if the id is null', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().delete('Datas', null);
+        })
+        .then(function(result) {
+          expect(result).to.equal(0);
+        })
+        .then(done, done);
+    });
+    it('should return 0 if the id is null', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().delete('Datas', { $nin: -2 });
+        })
+        .then(function(result) {
+          expect(result).to.equal(0);
+        })
+        .then(done, done);
+    });
+  });
+
+  describe('#dropDatabase()', () => {
+    it('should only remove Files if the are already there', () => {
+      let url = 'nedb://nedbdata';
+      connect(url).then(db => {
+        return db.dropDatabase();
+      });
+    });
+  });
+  describe('#count()', () => {
+    it('should reject an invalid count query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().count('Datas', { $nin: -2 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#findOneAndDelete()', () => {
+    it('should reject an invalid findOneAndDelete query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndDelete('Datas', { $nin: -2 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+    it('should return zero if no results are found', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndDelete('Datas', { _id: 0 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#findOneAndupdate()', () => {
+    it('should reject an invalid findOneAndUpdate query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndUpdate('Datas', { $not: -2 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+    it('should return zero if no results are found', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndDelete('Datas', { _id: 0 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#clearCollection()', () => {
+    it('should reject an invalid findOneAndDelete query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().clearCollection('none');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+});
 
 describe('NeDB In Memory Capabilities', () => {
   const url = 'nedb://memory';
