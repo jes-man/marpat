@@ -6,7 +6,7 @@ const { expect } = require('chai');
 
 const DatabaseClient = require('../../lib/clients/client');
 
-describe('DatabaseClient', function() {
+describe('Base Client', function() {
   describe('Required Methods', function() {
     it('should require a save method', function() {
       class ErrorClient extends DatabaseClient {
