@@ -1,40 +1,251 @@
 'use strict';
 
-/* global describe before beforeEach afterEach it */
+/* global describe before beforeEach afterEach, after, it */
 
 const { expect } = require('chai');
-const { connect } = require('../index');
-const { Document } = require('../index');
-const { Data } = require('./data');
-const getData1 = require('./util').data1;
-const getData2 = require('./util').data2;
-const { validateData1 } = require('./util');
-const { validateId } = require('./util');
-const { isNativeId } = require('../lib/validate');
+const { connect, Document, Client } = require('../../index');
+const getData1 = require('../util').data1;
+const getData2 = require('../util').data2;
+const { validateData1, validateId } = require('../util');
+const { Address, Pet, User, Data } = require('../mocks');
+const { isNativeId } = require('../../lib/validate');
+const chaiAsPromised = require('chai-as-promised');
 
-describe('Client', () => {
+const chai = require('chai');
+
+chai.use(chaiAsPromised);
+
+describe('Base NeDB Client', () => {
   const url = 'nedb://memory';
-  //const url = 'mongodb://localhost/camo_test';
   let database = null;
 
   before(done => {
     connect(url)
       .then(db => {
         database = db;
-        return database.dropDatabase();
+        database.dropDatabase();
       })
-      .then(() => {
-        return done();
-      });
+      .then(() => done());
   });
 
   beforeEach(done => {
     done();
   });
 
-  afterEach(done => database.dropDatabase().then(() => done()));
+  afterEach(() => database.dropDatabase());
 
-  after(done => database.dropDatabase().then(() => done()));
+  after(() => database.dropDatabase());
+
+  describe('#save()', () => {
+    it('should reject if it can not update the object', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().save('Datas', undefined, data);
+        })
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+
+  describe('#delete()', () => {
+    it('should reject if it can not delete the object', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().delete('Datas', { $nin: -2 });
+        })
+        .then(function(result) {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+    it('should return 0 if the id is null', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().delete('Datas', null);
+        })
+        .then(function(result) {
+          expect(result).to.equal(0);
+        })
+        .then(done, done);
+    });
+    it('should return 0 if the id is null', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().delete('Datas', { $nin: -2 });
+        })
+        .then(function(result) {
+          expect(result).to.equal(0);
+        })
+        .then(done, done);
+    });
+  });
+
+  describe('#dropDatabase()', () => {
+    it('should only remove Files if the are already there', () => {
+      let url = 'nedb://nedbdata';
+      connect(url).then(db => {
+        return db.dropDatabase();
+      });
+    });
+  });
+  describe('#count()', () => {
+    it('should reject an invalid count query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().count('Datas', { $nin: -2 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#findOneAndDelete()', () => {
+    it('should reject an invalid findOneAndDelete query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndDelete('Datas', { $nin: -2 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+    it('should return zero if no results are found', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndDelete('Datas', { _id: 0 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#findOneAndupdate()', () => {
+    it('should reject an invalid findOneAndUpdate query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndUpdate('Datas', { $not: -2 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+    it('should return zero if no results are found', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndDelete('Datas', { _id: 0 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#clearCollection()', () => {
+    it('should reject an invalid findOneAndDelete query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().clearCollection('none');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+});
+
+describe('NeDB In Memory Capabilities', () => {
+  const url = 'nedb://memory';
+  let database = null;
+
+  before(done => {
+    connect(url)
+      .then(db => {
+        database = db;
+        database.dropDatabase();
+      })
+      .then(() => done());
+  });
+
+  beforeEach(done => {
+    done();
+  });
+
+  afterEach(() => database.dropDatabase());
+
+  after(() => database.dropDatabase());
 
   describe('#save()', () => {
     it('should persist the object and its members to the database', done => {
@@ -49,44 +260,6 @@ describe('Client', () => {
         .then(done, done);
     });
   });
-
-  class Address extends Document {
-    constructor() {
-      super();
-
-      this.street = String;
-      this.city = String;
-      this.zipCode = Number;
-    }
-
-    static collectionName() {
-      return 'addresses';
-    }
-  }
-
-  class Pet extends Document {
-    constructor() {
-      super();
-
-      this.schema({
-        type: String,
-        name: String
-      });
-    }
-  }
-
-  class User extends Document {
-    constructor() {
-      super();
-
-      this.schema({
-        firstName: String,
-        lastName: String,
-        pet: Pet,
-        address: Address
-      });
-    }
-  }
 
   describe('#findOne()', () => {
     it('should load a single object from the collection', done => {
@@ -255,6 +428,20 @@ describe('Client', () => {
   });
 
   describe('#findOneAndUpdate()', () => {
+    it('should return null if there is no document to update', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          return Data.findOneAndUpdate({ number: 3 }, { source: 'wired' });
+        })
+        .then(d => {
+          expect(d).to.equal(null);
+        })
+        .then(done, done);
+    });
     it('should load and update a single object from the collection', done => {
       let data = getData1();
 
@@ -395,9 +582,31 @@ describe('Client', () => {
         })
         .then(done, done);
     });
+    it('requires at least two arguments', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          expect(() => Data.findOneAndUpdate({ number: 3 })).to.throw();
+        })
+        .then(done, done);
+    });
   });
 
   describe('#findOneAndDelete()', () => {
+    it('requires at least one argument', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          expect(() => Data.findOneAndDelete()).to.throw();
+        })
+        .then(done, done);
+    });
     it('should load and delete a single object from the collection', done => {
       let data = getData1();
 
@@ -510,6 +719,42 @@ describe('Client', () => {
           expect(cities[0].population).to.be.equal(30720);
           expect(cities[1].population).to.be.equal(4388);
           expect(cities[2].population).to.be.equal(800);
+        })
+        .then(done, done);
+    });
+
+    it('should sort results using multiple keys', done => {
+      let AlphaVille = City.create({
+        name: 'Alphaville',
+        population: 4388
+      });
+
+      let BetaTown = City.create({
+        name: 'Beta Town',
+        population: 4388
+      });
+
+      Promise.all([AlphaVille.save(), BetaTown.save()])
+        .then(() => {
+          return City.find({}, { sort: ['population', 1, '-name'] });
+        })
+        .then(cities => {
+          expect(cities).to.have.length(5);
+          validateId(cities[0]);
+          validateId(cities[1]);
+          validateId(cities[2]);
+          validateId(cities[3]);
+          validateId(cities[4]);
+          expect(cities[0].population).to.be.equal(800);
+          expect(cities[0].name).to.be.equal('Quahog');
+          expect(cities[1].population).to.be.equal(4388);
+          expect(cities[1].name).to.be.equal('South Park');
+          expect(cities[2].population).to.be.equal(4388);
+          expect(cities[2].name).to.be.equal('Beta Town');
+          expect(cities[3].population).to.be.equal(4388);
+          expect(cities[3].name).to.be.equal('Alphaville');
+          expect(cities[4].population).to.be.equal(30720);
+          expect(cities[4].name).to.be.equal('Springfield');
         })
         .then(done, done);
     });
@@ -778,6 +1023,22 @@ describe('Client', () => {
         .then(done, done);
     });
 
+    it('should disregard unsupported options', done => {
+      let data1 = getData1();
+      let data2 = getData2();
+
+      Promise.all([data1.save(), data2.save()])
+        .then(() => {
+          validateId(data1);
+          validateId(data2);
+          return Data.count({});
+        })
+        .then(count => {
+          expect(count).to.be.equal(2);
+        })
+        .then(done, done);
+    });
+
     it('should return 2 matching objects from the collection', done => {
       let data1 = getData1();
       let data2 = getData2();
@@ -895,6 +1156,206 @@ describe('Client', () => {
         })
         .then(datas => {
           expect(datas).to.have.length(0);
+        })
+        .then(done, done);
+    });
+  });
+});
+
+describe('NeDB File System Capabilities', function() {
+  const url = 'nedb://nedbdata';
+  let database;
+  before(function(done) {
+    connect(url)
+      .then(function(db) {
+        database = db;
+        return database.dropDatabase();
+      })
+      .then(function() {
+        return done();
+      });
+  });
+
+  it('should create a file based store', done => {
+    class Person extends Document {
+      constructor() {
+        super();
+        this.schema({
+          name: {
+            type: String
+          }
+        });
+      }
+    }
+    let person = Person.create({ name: 'Han Solo' });
+    person.save().then(person => {
+      expect(person).to.be.an('object');
+      done();
+    });
+  });
+  it('should return collections as a driver', done => {
+    class Person extends Document {
+      constructor() {
+        super();
+        this.schema({
+          name: {
+            type: String
+          }
+        });
+      }
+    }
+    let person = Person.create({ name: 'Han Solo' });
+    person.save().then(person => {
+      expect(global.CLIENT.driver()).to.be.an('object');
+      done();
+    });
+  });
+
+  it('should remove files when used on the File System', done => {
+    class Person extends Document {
+      constructor() {
+        super();
+        this.schema({
+          name: {
+            type: String
+          }
+        });
+      }
+    }
+    let person = Person.create({ name: 'Han Solo' });
+    person.save().then(person => {
+      validateId(person);
+      expect(() => database.dropDatabase()).to.not.throw();
+      done();
+    });
+  });
+  it('should not delete files if there are no collections', () => {
+    return expect(() => database.dropDatabase()).to.not.throw();
+  });
+});
+
+describe('NeDbClient - old', function() {
+  const url = 'nedb://memory';
+  let database = null;
+
+  before(function(done) {
+    connect(url)
+      .then(function(db) {
+        database = db;
+        return database.dropDatabase();
+      })
+      .then(function() {
+        return done();
+      });
+  });
+
+  beforeEach(function(done) {
+    done();
+  });
+
+  afterEach(function(done) {
+    database
+      .dropDatabase()
+      .then(function() {})
+      .then(done, done);
+  });
+
+  after(function(done) {
+    done();
+  });
+
+  describe('id', function() {
+    it('should allow custom _id values', function(done) {
+      class School extends Document {
+        constructor() {
+          super();
+
+          this.name = String;
+        }
+      }
+
+      let school = School.create();
+      school._id = '1234567890abcdef';
+      school.name = 'South Park Elementary';
+
+      school
+        .save()
+        .then(function() {
+          validateId(school);
+          expect(school._id).to.be.equal('1234567890abcdef');
+          return School.findOne();
+        })
+        .then(function(s) {
+          validateId(s);
+          expect(s._id).to.be.equal('1234567890abcdef');
+        })
+        .then(done, done);
+    });
+  });
+
+  describe('indexes', function() {
+    it('should reject documents with duplicate values in unique-indexed fields', function(done) {
+      class User extends Document {
+        constructor() {
+          super();
+
+          this.schema({
+            name: String,
+            email: {
+              type: String,
+              unique: true
+            }
+          });
+        }
+      }
+
+      let user1 = User.create();
+      user1.name = 'Bill';
+      user1.email = 'billy@example.com';
+
+      let user2 = User.create();
+      user1.name = 'Billy';
+      user2.email = 'billy@example.com';
+
+      Promise.all([user1.save(), user2.save()])
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error.errorType).to.be.equal('uniqueViolated');
+        })
+        .then(done, done);
+    });
+
+    it('should accept documents with duplicate values in non-unique-indexed fields', function(done) {
+      class User extends Document {
+        constructor() {
+          super();
+
+          this.schema({
+            name: String,
+            email: {
+              type: String,
+              unique: false
+            }
+          });
+        }
+      }
+
+      let user1 = User.create();
+      user1.name = 'Bill';
+      user1.email = 'billy@example.com';
+
+      let user2 = User.create();
+      user1.name = 'Billy';
+      user2.email = 'billy@example.com';
+
+      Promise.all([user1.save(), user2.save()])
+        .then(function() {
+          validateId(user1);
+          validateId(user2);
+          expect(user1.email).to.be.equal('billy@example.com');
+          expect(user2.email).to.be.equal('billy@example.com');
         })
         .then(done, done);
     });

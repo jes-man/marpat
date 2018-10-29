@@ -1,22 +1,14 @@
 'use strict';
 
-const _ = require('lodash');
-const fs = require('fs');
-const expect = require('chai').expect;
-const connect = require('../index').connect;
-const Document = require('../index').Document;
-const EmbeddedDocument = require('../index').EmbeddedDocument;
-const isDocument = require('../lib/validate').isDocument;
-const ValidationError = require('../lib/errors').ValidationError;
-const { Data } = require('./data');
-const getData1 = require('./util').data1;
-const getData2 = require('./util').data2;
-const validateId = require('./util').validateId;
+/* global describe before beforeEach afterEach after it */
+
+const { expect } = require('chai');
+const { Document, EmbeddedDocument, connect } = require('../../index');
+const { ValidationError } = require('../../lib/errors');
+const { validateId } = require('../util');
 
 describe('Embedded', function() {
-  // TODO: Should probably use mock database client...
   const url = 'nedb://memory';
-  //const url = 'mongodb://localhost/camo_test';
   let database = null;
 
   before(function(done) {
@@ -412,7 +404,96 @@ describe('Embedded', function() {
         })
         .then(done, done);
     });
+    it('should accept a validation function', function(done) {
+      class EmbeddedModel extends EmbeddedDocument {
+        constructor() {
+          super();
+          this.num = { type: Number, validate: value => value !== 1, max: 10 };
+        }
+      }
 
+      class DocumentModel extends Document {
+        constructor() {
+          super();
+          this.emb = EmbeddedModel;
+        }
+      }
+
+      let data = DocumentModel.create();
+      data.emb = EmbeddedModel.create();
+      data.emb.num = 1;
+
+      data
+        .save()
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error).to.be.instanceof(ValidationError);
+        })
+        .then(done, done);
+    });
+    it('should accept a validation function', function(done) {
+      class EmbeddedModel extends EmbeddedDocument {
+        constructor() {
+          super();
+          this.num = { type: Number, validate: value => value !== 1, max: 10 };
+        }
+      }
+
+      class DocumentModel extends Document {
+        constructor() {
+          super();
+          this.emb = EmbeddedModel;
+        }
+      }
+
+      let data = DocumentModel.create();
+      data.emb = EmbeddedModel.create();
+      data.emb.num = 26;
+
+      data
+        .save()
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error).to.be.instanceof(ValidationError);
+          expect(error.message).to.contain('max');
+        })
+        .then(done, done);
+    });
+    it('should accept an array of validation functions', function(done) {
+      class EmbeddedModel extends EmbeddedDocument {
+        constructor() {
+          super();
+          this.num = { type: Number, validate: value => value !== 1 };
+        }
+      }
+
+      class DocumentModel extends Document {
+        constructor() {
+          super();
+          this.embs = [EmbeddedModel];
+        }
+      }
+
+      let data = DocumentModel.create();
+      let emb1 = EmbeddedModel.create({ num: 2 });
+      let emb2 = EmbeddedModel.create({ num: 1 });
+      data.embs.push(emb1);
+      data.embs.push(emb2);
+
+      data
+        .save()
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error).to.be.instanceof(ValidationError);
+        })
+        .then(done, done);
+    });
     it('should validate array of embedded values', function(done) {
       class Money extends EmbeddedDocument {
         constructor() {

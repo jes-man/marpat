@@ -1,6 +1,6 @@
 'use strict';
 
-const { Document, EmbeddedDocument } = require('../index');
+const { Document } = require('../../index');
 
 class Data extends Document {
   constructor() {
@@ -31,16 +31,4 @@ class Data extends Document {
   }
 }
 
-class EmbeddedData extends EmbeddedDocument {
-  constructor() {
-    super();
-
-    this.schema({
-      name: {
-        type: String
-      }
-    });
-  }
-}
-
-module.exports = { Data, EmbeddedData };
+module.exports = { Data };
