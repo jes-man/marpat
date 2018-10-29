@@ -4,13 +4,246 @@
 
 const { expect } = require('chai');
 const { ObjectId } = require('mongodb');
-const { connect, Document } = require('../../index');
+const { connect, Document, Client } = require('../../index');
 const { Data } = require('../mocks');
 const getData1 = require('../util').data1;
 const getData2 = require('../util').data2;
 const { Address, Pet, User } = require('../mocks');
 const { validateData1, validateId } = require('../util');
 const { isNativeId } = require('../../lib/validate');
+
+describe('Base MongoDB Client', () => {
+  const url = 'mongodb://localhost/marpat_test';
+  let database = null;
+
+  before(done => {
+    connect(url)
+      .then(db => {
+        database = db;
+        database.dropDatabase();
+      })
+      .then(() => done());
+  });
+
+  beforeEach(done => {
+    done();
+  });
+
+  afterEach(() => database.dropDatabase());
+
+  after(() => database.dropDatabase());
+
+  describe('#save()', () => {
+    it('should reject if it can not update the object', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().save('Datas', undefined, data);
+        })
+        .then(function() {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#deleteMany()', () => {
+    it('should reject if it can not delete the object', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().deleteMany('Datas', '-2');
+        })
+        .then(function(result) {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#delete()', () => {
+    it('should reject if it can not delete the object', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().delete('Datas', { $nin: -2 });
+        })
+        .then(function(result) {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#deleteOne()', () => {
+    it('should reject if it can not delete the object', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().deleteOne('Datas', { $nin: -2 });
+        })
+        .then(function(result) {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#findOne()', () => {
+    it('should reject if it can not delete the object', done => {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOne('Datas', '-2');
+        })
+        .then(function(result) {
+          expect.fail(null, Error, 'Expected error, but got none.');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#dropDatabase()', () => {});
+  describe('#count()', () => {
+    it('should reject an invalid count query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().count('Datas', { $nin: -2 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#findOneAndDelete()', () => {
+    it('should reject an invalid findOneAndDelete query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndDelete('Datas', { $nin: -2 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+    it('should return zero if no results are found', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndDelete('Datas', { _id: 0 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#findOneAndupdate()', () => {
+    it('should reject an invalid findOneAndUpdate query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndUpdate('Datas', { $nin: -2 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+    it('should return zero if no results are found', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().findOneAndDelete('Datas', { _id: 0 });
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+  describe('#clearCollection()', () => {
+    it('should reject an invalid findOneAndDelete query', function(done) {
+      let data = getData1();
+
+      data
+        .save()
+        .then(() => {
+          validateId(data);
+          validateData1(data);
+          data._id = {};
+          return Client().clearCollection('none');
+        })
+        .catch(function(error) {
+          expect(error instanceof Error).to.be.true;
+        })
+        .then(done, done);
+    });
+  });
+});
 
 describe('MongoDB Client', () => {
   const url = 'mongodb://localhost/marpat_test';
@@ -44,7 +277,6 @@ describe('MongoDB Client', () => {
         })
         .then(done, done);
     });
-
   });
 
   describe('#findOne()', () => {
@@ -1129,6 +1361,33 @@ describe('MongoDB Client', () => {
 
           expect(String(u1._id)).to.be.equal(String(user1._id));
           expect(String(u2._id)).to.be.equal(String(user2._id));
+        })
+        .then(done, done);
+    });
+
+    it("should automatically cast string IDs in '$not' operator to ObjectIDs", function(done) {
+      let user1 = User.create();
+      user1.firstName = 'Billy';
+      user1.lastName = 'Bob';
+
+      let user2 = User.create();
+      user2.firstName = 'Jenny';
+      user2.lastName = 'Jane';
+
+      let user3 = User.create();
+      user3.firstName = 'Danny';
+      user3.lastName = 'David';
+
+      Promise.all([user1.save(), user2.save(), user3.save()])
+        .then(function() {
+          validateId(user1);
+          validateId(user2);
+
+          let id3 = String(user3._id);
+          return User.find({ _id: { $eq: id3 } });
+        })
+        .then(function(users) {
+          expect(users).to.have.length(0);
         })
         .then(done, done);
     });
