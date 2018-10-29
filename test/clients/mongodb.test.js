@@ -44,6 +44,7 @@ describe('MongoDB Client', () => {
         })
         .then(done, done);
     });
+
   });
 
   describe('#findOne()', () => {
@@ -1097,6 +1098,41 @@ describe('MongoDB Client', () => {
         .then(done, done);
     });
 
+    it("should automatically cast string IDs in '$nin' operator to ObjectIDs", function(done) {
+      let user1 = User.create();
+      user1.firstName = 'Billy';
+      user1.lastName = 'Bob';
+
+      let user2 = User.create();
+      user2.firstName = 'Jenny';
+      user2.lastName = 'Jane';
+
+      let user3 = User.create();
+      user3.firstName = 'Danny';
+      user3.lastName = 'David';
+
+      Promise.all([user1.save(), user2.save(), user3.save()])
+        .then(function() {
+          validateId(user1);
+          validateId(user2);
+
+          let id3 = String(user3._id);
+          return User.find({ _id: { $nin: [id3] } });
+        })
+        .then(function(users) {
+          expect(users).to.have.length(2);
+
+          let u1 =
+            String(users[0]._id) === String(user1._id) ? users[0] : users[1];
+          let u2 =
+            String(users[1]._id) === String(user2._id) ? users[1] : users[0];
+
+          expect(String(u1._id)).to.be.equal(String(user1._id));
+          expect(String(u2._id)).to.be.equal(String(user2._id));
+        })
+        .then(done, done);
+    });
+
     it('should automatically cast string IDs in deep query objects', function(done) {
       let user1 = User.create();
       user1.firstName = 'Billy';
@@ -1134,13 +1170,18 @@ describe('MongoDB Client', () => {
     });
   });
 
-  describe('Close Database Connection', done => {
-    connect(url)
-      .then(db => {
-        database = db;
-        database.close();
-      })
-      .then(() => done());
+  describe('Close Database Connection', function() {
+    connect(url).then(db => {
+      database = db;
+      expect(() => database.close()).to.not.throw();
+    });
+  });
+
+  describe('Client Driver', function() {
+    connect(url).then(db => {
+      database = db;
+      expect(database.driver()).to.be.an('object');
+    });
   });
 
   describe('indexes', function() {
@@ -1158,7 +1199,6 @@ describe('MongoDB Client', () => {
           });
         }
       }
-
       let user1 = User.create();
       user1.name = 'Bill';
       user1.email = 'billy@example.com';
