@@ -2,7 +2,7 @@
 # marpat
 <!--/@-->
 
-[![Build Status](https://travis-ci.org/Luidog/fms-api-client.png?branch=master)](https://travis-ci.org/Luidog/marpat) [![Known Vulnerabilities](https://snyk.io/test/github/Luidog/marpat/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Luidog/marpat?targetFile=package.json) [![Coverage Status](https://coveralls.io/repos/github/Luidog/marpat/badge.svg?branch=document-update)](https://coveralls.io/github/Luidog/marpat?branch=document-update) [![GitHub issues](https://img.shields.io/github/issues/badges/shields.svg)](https://github.com/Luidog/marpat/issues) [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Luidog/marpat/blob/master/LICENSE.md)
+[![Build Status](https://travis-ci.org/Luidog/fms-api-client.png?branch=master)](https://travis-ci.org/Luidog/marpat) [![Known Vulnerabilities](https://snyk.io/test/github/Luidog/marpat/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Luidog/marpat?targetFile=package.json) [![Coverage Status](https://coveralls.io/repos/github/Luidog/marpat/badge.svg?branch=document-update)](https://coveralls.io/github/Luidog/marpat?branch=document-update) [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Luidog/marpat/blob/master/LICENSE.md)
 
 Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Camo](https://github.com/scottwrobinson/camo). When integrating with FileMaker servers I found a need for a local datastore alongside filemaker that could be encrypted and could scale effectively.
 
