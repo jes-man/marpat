@@ -37,6 +37,11 @@ describe('Connect Capability', () => {
         .to.eventually.be.an('object')
         .with.all.keys('_mongo', '_client', '_url');
     });
+    it('should reject if it can not connect to a mongodb connection', function() {
+      return expect(
+        connect('mongodb://127.0.0.1:27018/marpat').catch(error => error)
+      ).to.eventually.be.an('error');
+    });
     it('should reject an unrecognized connection', function() {
       return expect(
         connect('FIREBASE://memory').catch(error => error)
