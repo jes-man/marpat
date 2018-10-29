@@ -1,4 +1,4 @@
-# Marpat[![Build Status](https://travis-ci.org/Luidog/fms-api-client.png?branch=master)](https://travis-ci.org/Luidog/marpat)
+# marpat[![Build Status](https://travis-ci.org/Luidog/fms-api-client.png?branch=master)](https://travis-ci.org/Luidog/marpat)[![Known Vulnerabilities](https://snyk.io/test/github/Luidog/marpat/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Luidog/marpat?targetFile=package.json)[![Coverage Status](https://coveralls.io/repos/github/Luidog/marpat/badge.svg?branch=document-update)](https://coveralls.io/github/Luidog/marpat?branch=document-update)
 
 Marpat is lightweight object modeling tool that uses ES6 classes to model data. This is a fork of [Camo](https://github.com/scottwrobinson/camo). When integrating with FileMaker servers I found a need for a local datastore alongside filemaker that could be encrypted and could scale effectively.
 
@@ -414,8 +414,7 @@ Before opening an issue or submitting a PR, I ask that you follow these guidelin
 
 ## Marpat Copyright & License
 
-Copyright (c) 2018 Lui de la Parra
-Copyright (c) 2016 Scott Robinson
+Copyright (c) 2018 Lui de la Parra & Scott Robinson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
