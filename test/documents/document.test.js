@@ -901,7 +901,7 @@ describe('Document Capabilities', function() {
         .save()
         .then(function() {
           validateId(data);
-          expect(data.date).to.be.lessThan(Date.now());
+          expect(data.date).to.be.lessThan(new Date());
         })
         .then(done, done);
     });
