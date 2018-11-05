@@ -103,7 +103,6 @@ describe('Document Capabilities', function() {
         lastName: 'Bob',
         nicknames: ['Bill', 'William', 'Will']
       });
-
       expect(user.firstName).to.be.equal('Billy');
       expect(user.lastName).to.be.equal('Bob');
       expect(user.nicknames).to.have.length(3);
@@ -112,6 +111,81 @@ describe('Document Capabilities', function() {
       expect(user.nicknames).to.include('Will');
 
       done();
+    });
+
+    it('should not create data that is not in the schema', function(done) {
+      class User extends Document {
+        constructor() {
+          super();
+          this.firstName = String;
+          this.lastName = String;
+          this.nicknames = [String];
+        }
+      }
+
+      let user = User.create({
+        firstName: 'Billy',
+        lastName: 'Bob',
+        notInSchema: true,
+        alsoNotInSchema: 1,
+        stillNotInSchema: 'this',
+        nicknames: ['Bill', 'William', 'Will']
+      });
+      expect(user).to.not.have.keys(
+        'notInSchema',
+        'alsoNotInSchema',
+        'stillNotInSchema'
+      );
+      expect(user.firstName).to.be.equal('Billy');
+      expect(user.lastName).to.be.equal('Bob');
+      expect(user.nicknames).to.have.length(3);
+      expect(user.nicknames).to.include('Bill');
+      expect(user.nicknames).to.include('William');
+      expect(user.nicknames).to.include('Will');
+
+      done();
+    });
+
+    it('should not save data that is not in the schema data', function(done) {
+      class User extends Document {
+        constructor() {
+          super();
+          this.firstName = String;
+          this.lastName = String;
+          this.nicknames = [String];
+        }
+      }
+
+      let user = User.create({
+        firstName: 'Billy',
+        lastName: 'Bob',
+        notInSchema: true,
+        alsoNotInSchema: 1,
+        stillNotInSchema: 'this',
+        nicknames: ['Bill', 'William', 'Will']
+      });
+      user
+        .save()
+        .then(user => {
+          expect(user.firstName).to.be.equal('Billy');
+          expect(user.lastName).to.be.equal('Bob');
+          expect(user.nicknames).to.have.length(3);
+          expect(user.nicknames).to.include('Bill');
+          expect(user.nicknames).to.include('William');
+          expect(user.nicknames).to.include('Will');
+          user.alsoNotInSchema = true;
+          user.stillNotInSchema = true;
+          user.notInSchema = true;
+          return user.save();
+        })
+        .then(user => {
+          expect(user).to.not.have.keys(
+            'notInSchema',
+            'alsoNotInSchema',
+            'stillNotInSchema'
+          );
+          done();
+        });
     });
 
     it('should allow creation of instance with references', function(done) {
