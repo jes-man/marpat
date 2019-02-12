@@ -8,6 +8,15 @@ const DatabaseClient = require('../../lib/clients/client');
 
 describe('Base Client', function() {
   describe('Required Methods', function() {
+    it('should require a (static) canHandle method', function() {
+      class ErrorClient extends DatabaseClient {
+        constructor() {
+          super();
+          this.name = String;
+        }
+      }
+      expect(() => ErrorClient.canHandle()).to.throw();
+    });
     it('should require a save method', function() {
       class ErrorClient extends DatabaseClient {
         constructor() {
