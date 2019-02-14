@@ -19,6 +19,7 @@ Marpat is lightweight object modeling tool that uses ES6 classes to model data. 
   - <a href="#deleting">Deleting</a>
   - <a href="#counting">Counting</a>
   - <a href="#hooks">Hooks</a>
+  - <a href="#driver">Custom Database Driver</a>
   - <a href="#misc">Misc.</a>
 - <a href="#transpiler-support">Transpiler Support</a>
 - <a href="#contributing">Contributing</a>
@@ -378,6 +379,24 @@ class Company extends Document {
 The code above shows a pre-delete hook that deletes all the employees of the company before it itself is deleted. As you can see, this is much more convenient than needing to always remember to delete referenced employees in the application code.
 
 **Note**: The `.preDelete()` and `.postDelete()` hooks are _only_ called when calling `.delete()` on a Document instance. Calling `.deleteOne()` or `.deleteMany()` will **not** trigger the hook methods.
+
+### Custom Database Driver
+
+Marpat provides two default database driver (NeDbClient and MongoDbClient). If you need to write you own database driver you can register it with the ClientRegistry service.
+
+```javascript
+var { connect, ClientRegistry, DatabaseClient } = require('Marpat');
+
+class MyClient extends DatabaseClient {
+    static canHandle(url) {
+        return url.indexOf('foo://') === 0;
+    }
+}
+
+ClientRegistry.add(MyClient);
+
+connect('foo://bar').then(function(db) { });
+```
 
 ### Misc.
 
